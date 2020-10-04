@@ -12,6 +12,7 @@ class BruteForce:
 
     def _solve(self, conf, i, weight, price):
         if i == self.inst.size:
+            self.sol.complexity += 1
             if price >= self.sol.price:
                 self.sol.price = price
                 self.sol.conf = conf.copy()
