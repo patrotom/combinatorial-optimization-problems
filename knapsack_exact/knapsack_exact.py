@@ -4,6 +4,7 @@ import sys
 import argparse as ap
 from utils.input_processor import InputProcessor
 from lib.brute_force import BruteForce
+from lib.branch_and_bound import BranchAndBound
 
 
 def parse_args():
@@ -18,7 +19,7 @@ def parse_args():
 def knapsack_exact():
     args = parse_args()
     if args.branch_and_bound:
-        pass
+        solver_class = BranchAndBound
     else:
         solver_class = BruteForce
 
