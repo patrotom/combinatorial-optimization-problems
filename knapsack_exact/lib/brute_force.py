@@ -1,15 +1,7 @@
-from .solution import Solution
+from .algorithm import Algorithm
 
 
-class BruteForce:
-    def __init__(self, inst):
-        self.inst = inst
-        self.sol = Solution(inst.size)
-
-    def solve(self):
-        conf = self.sol.conf
-        self._solve(conf, 0, 0, 0)
-
+class BruteForce(Algorithm):
     def _solve(self, conf, i, weight, price):
         if i == self.inst.size:
             self.sol.complexity += 1
