@@ -7,6 +7,7 @@ class BruteForce(Algorithm):
             self.sol.complexity += 1
             if price >= self.sol.price:
                 self.sol.price = price
+                self.sol.weight = weight
                 self.sol.conf = conf.copy()
             return
 

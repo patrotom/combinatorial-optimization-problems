@@ -1,4 +1,5 @@
 import abc
+from timeit import default_timer as timer
 from .solution import Solution
 
 
@@ -9,7 +10,11 @@ class Algorithm:
 
     def solve(self):
         conf = self.sol.conf
+        start = timer()
         self._solve(conf, 0, 0, 0)
+        end = timer()
+        self.sol.solvable = self.inst.capacity == self.sol.weight
+        self.sol.time = end - start
 
     @abc.abstractmethod
     def _solve(self, conf, i, weight, price):

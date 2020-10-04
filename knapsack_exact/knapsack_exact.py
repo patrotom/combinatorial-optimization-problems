@@ -29,8 +29,11 @@ def knapsack_exact():
             solver = solver_class(inst)
             solver.solve()
             sol = solver.sol
-            print(sol.solvable, sol.conf, sol.price, sol.time, sol.complexity)
+            print(sol.solvable, sol.conf, sol.price, sol.weight, sol.time, sol.complexity)
 
 
 if __name__ == "__main__":
-    knapsack_exact()
+    try:
+        knapsack_exact()
+    except FileNotFoundError as e:
+        print(e)
