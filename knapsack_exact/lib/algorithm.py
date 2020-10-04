@@ -15,6 +15,7 @@ class Algorithm:
         end = timer()
         self.sol.solvable = self.inst.capacity == self.sol.weight
         self.sol.time = end - start
+        self.sol.conf = "".join(map(lambda x: str(x), self.sol.conf))
 
     @abc.abstractmethod
     def _solve(self, conf, i, weight, price):
