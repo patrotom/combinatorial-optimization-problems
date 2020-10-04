@@ -1,4 +1,4 @@
-from solution import Solution
+from .solution import Solution
 
 
 class BruteForce:
@@ -12,9 +12,9 @@ class BruteForce:
 
     def _solve(self, conf, i, weight, price):
         if i == self.inst.size:
-            if price >= self.inst.price:
-                self.inst.price = price
-                self.inst.conf = conf[:]
+            if price >= self.sol.price:
+                self.sol.price = price
+                self.sol.conf = conf.copy()
             return
         
         new_weight = self.inst.items[i].weight + weight
