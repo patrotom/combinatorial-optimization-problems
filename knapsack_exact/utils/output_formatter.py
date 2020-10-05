@@ -21,4 +21,4 @@ class OutputFormatter:
 
     def _prepare_file_path(self):
         basename = os.path.basename(self.if_path).split('_')[0]
-        return f"data/output/{self.alg}/{basename}_out.csv"
+        return f"data/output/{basename[0:2]}/{self.alg}/{basename}_out.csv"
