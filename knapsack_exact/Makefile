@@ -1,5 +1,4 @@
 define run_knapsack_exact
-	cd knapsack_exact
 	for i in 4 10 15 20 22; do
 		i_file="data/input/$(1)R/$(1)R$${i}_inst.dat"
 		s_file="data/input/$(1)R/$(1)K$${i}_sol.dat"
