@@ -12,8 +12,6 @@ class Greedy(Algorithm):
             if capacity >= item.weight:
                 price += item.price
                 capacity -= item.weight
-            else:
-                break
         
         self.sol.price = price
 

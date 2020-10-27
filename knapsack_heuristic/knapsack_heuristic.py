@@ -7,6 +7,7 @@ from utils.output_formatter import OutputFormatter
 from lib.brute_force import BruteForce
 from lib.branch_and_bound import BranchAndBound
 from lib.greedy import Greedy, ReduxGreedy
+from lib.dynamic_prog import DynamicProg
 from lib.algorithm import ComputationError
 from lib.solution import Solution
 
@@ -36,10 +37,11 @@ def parse_args():
 
 
 def solver_class(v):
+    # TODO: Implement configuration construction in heuristic algorithms
     switcher = {
         "bf": BruteForce,
         "bb": BranchAndBound,
-        # "dp": DynamicProg,
+        "dp": DynamicProg,
         "gh": Greedy,
         "rgh": ReduxGreedy,
         # "fptas": Fptas,
