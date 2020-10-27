@@ -13,15 +13,22 @@ class Algorithm:
         start = timer()
         self._solve(conf, 0, 0, 0)
         end = timer()
-        if self.sol.price != self.inst.opt_price:
-            raise ComputationError(self.inst.id, self.sol.price)
 
+        self._determine_validity()
         self.sol.time = end - start
         self.sol.conf = "".join(map(lambda x: str(x), self.sol.conf))
 
     @abc.abstractmethod
     def _solve(self, conf, i, weight, price):
         pass
+
+    def _determine_validity(self):
+        alg_class = self.__class__.__name__
+        if (alg_class in ['Greedy', 'ReduxGreedy'] and
+                self.sol.price != self.inst.opt_price):
+            self.sol.valid = False
+        elif self.sol.price != self.inst.opt_price:
+            raise ComputationError(self.inst.id, self.sol.price)
 
 
 class ComputationError(Exception):

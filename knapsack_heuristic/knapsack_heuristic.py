@@ -6,6 +6,7 @@ from utils.input_processor import InputProcessor
 from utils.output_formatter import OutputFormatter
 from lib.brute_force import BruteForce
 from lib.branch_and_bound import BranchAndBound
+from lib.greedy import Greedy
 from lib.algorithm import ComputationError
 from lib.solution import Solution
 
@@ -39,7 +40,7 @@ def solver_class(v):
         "bf": BruteForce,
         "bb": BranchAndBound,
         # "dp": DynamicProg,
-        # "gh": Greedy,
+        "gh": Greedy,
         # "rgh": ReduxGreedy,
         # "fptas": Fptas,
     }

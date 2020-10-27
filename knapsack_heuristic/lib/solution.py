@@ -5,3 +5,4 @@ class Solution:
         self.weight = 0
         self.time = 0
         self.complexity = 0
+        self.valid = True
