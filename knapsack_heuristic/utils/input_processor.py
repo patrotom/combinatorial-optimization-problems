@@ -25,9 +25,11 @@ class InputProcessor:
     
     def _prepare_items(self, data):
         items = []
+        index = 0
         for i in range(0, len(data), 2):
-            item = Item(data[i], data[i+1])
+            item = Item(data[i], data[i+1], index)
             items.append(item)
+            index += 1
         return items
 
     def _prepare_opt_prices(self):

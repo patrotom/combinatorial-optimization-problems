@@ -26,7 +26,7 @@ class Algorithm:
         alg_class = self.__class__.__name__
         if (alg_class in ['Greedy', 'ReduxGreedy'] and
                 self.sol.price != self.inst.opt_price):
-            self.sol.valid = False
+            self.sol.optimal = False
         elif self.sol.price != self.inst.opt_price:
             raise ComputationError(self.inst.id, self.sol.price)
 
