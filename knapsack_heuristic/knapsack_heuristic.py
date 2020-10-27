@@ -6,7 +6,7 @@ from utils.input_processor import InputProcessor
 from utils.output_formatter import OutputFormatter
 from lib.brute_force import BruteForce
 from lib.branch_and_bound import BranchAndBound
-from lib.greedy import Greedy
+from lib.greedy import Greedy, ReduxGreedy
 from lib.algorithm import ComputationError
 from lib.solution import Solution
 
@@ -41,7 +41,7 @@ def solver_class(v):
         "bb": BranchAndBound,
         # "dp": DynamicProg,
         "gh": Greedy,
-        # "rgh": ReduxGreedy,
+        "rgh": ReduxGreedy,
         # "fptas": Fptas,
     }
     return switcher.get(v, BruteForce)
