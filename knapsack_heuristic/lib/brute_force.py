@@ -4,10 +4,8 @@ from .algorithm import Algorithm
 class BruteForce(Algorithm):
     def _solve(self, conf, i, weight, price):
         if i == self.inst.size:
-            self.sol.complexity += 1
             if price >= self.sol.price:
                 self.sol.price = price
-                self.sol.weight = weight
                 self.sol.conf = conf.copy()
             return
 

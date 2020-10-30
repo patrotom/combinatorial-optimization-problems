@@ -23,3 +23,14 @@ class OutputFormatter:
         basename = os.path.basename(self.if_path).split('_')[0]
         dset_id = ''.join([i for i in basename if not i.isdigit()])
         return f"data/output/{dset_id}/{self.alg}/{basename}_out.csv"
+
+
+class FPTASFormatter(OutputFormatter):
+    def __init__(self, sols, if_path, alg, eps):
+        super().__init__(sols, if_path, alg)
+        self.eps = str(eps)
+    
+    def _prepare_file_path(self):
+        basename = os.path.basename(self.if_path).split('_')[0]
+        dset_id = ''.join([i for i in basename if not i.isdigit()])
+        return f"data/output/{dset_id}/{self.alg}/{self.eps}/{basename}_out.csv"

@@ -1,3 +1,4 @@
+from math import floor
 from functools import reduce 
 
 
@@ -8,6 +9,7 @@ class Instance:
         self.capacity = int(capacity)
         self.items = items
         self.opt_price = int(opt_price)
+        self.eps = 0
 
     def prices_sum(self, i=0):
         prices = map(lambda x: x.price, self.items[i:])
@@ -15,3 +17,7 @@ class Instance:
     
     def sort_items(self):
         self.items.sort(key=lambda i: i.price / i.weight, reverse=True)
+
+    def floor_prices(self, k):
+        for item in self.items:
+            item.price = int(floor(item.price / k))

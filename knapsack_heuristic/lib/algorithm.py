@@ -4,9 +4,9 @@ from .solution import Solution
 
 
 class Algorithm:
-    def __init__(self, inst):
+    def __init__(self, inst, solution_class):
         self.inst = inst
-        self.sol = Solution(inst.size)
+        self.sol = solution_class(inst.size)
 
     def solve(self):
         conf = self.sol.conf
@@ -24,9 +24,11 @@ class Algorithm:
 
     def _determine_validity(self):
         alg_class = self.__class__.__name__
-        if (alg_class in ['Greedy', 'ReduxGreedy'] and
+        if (alg_class in ['Greedy', 'ReduxGreedy', 'Fptas'] and
                 self.sol.price != self.inst.opt_price):
-            self.sol.optimal = False
+            self.sol.rel_err = abs(
+                (self.inst.opt_price - self.sol.price) / self.inst.opt_price
+            )
         elif self.sol.price != self.inst.opt_price:
             raise ComputationError(self.inst.id, self.sol.price)
 

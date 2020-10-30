@@ -1,4 +1,5 @@
 from .algorithm import Algorithm
+from .solution import ErrorSolution
 
 
 class Greedy(Algorithm):
@@ -8,7 +9,6 @@ class Greedy(Algorithm):
         price = 0
 
         for item in self.inst.items:
-            self.sol.complexity += 1
             if capacity >= item.weight:
                 price += item.price
                 capacity -= item.weight
@@ -19,9 +19,9 @@ class Greedy(Algorithm):
 
 class ReduxGreedy(Algorithm):
     def _solve(self, *_):
-        greedy = Greedy(self.inst)
+        greedy = Greedy(self.inst, ErrorSolution)
         greedy._solve()
-        highest_price, complexity, index = self._find_highest_price()
+        highest_price, index = self._find_highest_price()
 
         if greedy.sol.price > highest_price:
             self.sol.price = greedy.sol.price
@@ -29,16 +29,13 @@ class ReduxGreedy(Algorithm):
         else:
             self.sol.price = highest_price
             self.sol.conf[index] = 1
-        self.sol.complexity = greedy.sol.complexity + complexity
 
     def _find_highest_price(self):
         highest_price = 0
-        complexity = 0
         index = -1
         for item in self.inst.items:
-            complexity += 1
             if item.price > highest_price and item.weight <= self.inst.capacity:
                 highest_price = item.price
                 index = item.index
         
-        return (highest_price, complexity, index)
+        return (highest_price, index)
