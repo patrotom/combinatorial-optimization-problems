@@ -26,9 +26,8 @@ class Algorithm:
         alg_class = self.__class__.__name__
         if (alg_class in ['Greedy', 'ReduxGreedy', 'Fptas'] and
                 self.sol.price != self.inst.opt_price):
-            self.sol.rel_err = abs(
-                (self.inst.opt_price - self.sol.price) / self.inst.opt_price
-            )
+            self.sol.rel_err = abs(self.sol.price - self.inst.opt_price) / \
+                max(self.inst.opt_price, self.sol.price)
         elif self.sol.price != self.inst.opt_price:
             raise ComputationError(self.inst.id, self.sol.price)
 
