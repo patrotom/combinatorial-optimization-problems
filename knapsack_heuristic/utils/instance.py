@@ -21,3 +21,5 @@ class Instance:
     def floor_prices(self, k):
         for item in self.items:
             item.price = int(floor(item.price / k))
+            if item.price < 1:
+                item.price = 1
