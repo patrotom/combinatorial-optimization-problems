@@ -95,6 +95,7 @@ class DynamicWeight(Algorithm):
 
 class Fptas(Algorithm):
     def _solve(self, *_):
+        removed_items = self._remove_large_items()
         max_price = max(self.inst.items, key=lambda x: x.price).price
         k = (self.inst.eps * max_price) / self.inst.size
         original_prices = list(map(lambda x: x.price, self.inst.items))
@@ -103,8 +104,25 @@ class Fptas(Algorithm):
         dynamic_price = DynamicPrice(self.inst, Solution)
         dynamic_price._solve()
 
-        self.sol.conf = dynamic_price.sol.conf
+        dyn_conf = dynamic_price.sol.conf
         self.sol.time = dynamic_price.sol.time
         self.sol.price = sum(
-            [p for i, p in enumerate(original_prices) if self.sol.conf[i] == 1]
+            [p for i, p in enumerate(original_prices) if dyn_conf[i] == 1]
         )
+
+        self.sol.conf = self._construct_conf(removed_items, dyn_conf)
+
+    def _remove_large_items(self):
+        removed_items = []
+        for i, item in enumerate(self.inst.items):
+            if item.weight > self.inst.capacity:
+                removed_items.append(self.inst.items.pop(i))
+                self.inst.size -= 1
+
+        return removed_items
+
+    def _construct_conf(self, removed_items, conf):
+        for item in removed_items:
+            conf.insert(item.index, 0)
+
+        return conf
