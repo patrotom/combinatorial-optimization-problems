@@ -14,7 +14,7 @@ class BranchAndBound(Algorithm):
         upper_bound = price + self.inst.prices_sum(i=i)
 
         conf[i] = 1
-        if (new_weight <= self.inst.capacity) and (upper_bound >= self.sol.price):
+        if (new_weight <= self.inst.capacity) and (upper_bound > self.sol.price):
             self._solve(conf, i + 1, new_weight, new_price)
 
         conf[i] = 0
