@@ -8,17 +8,30 @@ class InputProcessor:
 
     def prepare_instances(self):
         instances = []
-
         lines = self.stdout.split("\n")[:-1]
-
         for line in lines:
-            i_vars = line.strip().split(' ')
-            id, size, cap = i_vars[0:3]
-            items = self.__prepare_items(i_vars[3:])
-            inst = Instance(id, size, cap, items)
-            instances.append(inst)
+            instances.append(self.__prepare_instance(line))
 
         return instances
+
+    def prepare_permutations(self, number):
+        permutations = [[] for x in range(number)]
+        lines = self.stdout.split("\n")[:-1]
+        i = 0
+        for line in lines:
+            if i == number:
+                i = 0
+            permutations[i].append(self.__prepare_instance(line))
+            i += 1
+        
+        return permutations
+
+    def __prepare_instance(self, line):
+        i_vars = line.strip().split(' ')
+        id, size, cap = i_vars[0:3]
+        items = self.__prepare_items(i_vars[3:])
+        inst = Instance(id, size, cap, items)
+        return inst
     
     def __prepare_items(self, data):
         items = []
