@@ -2,7 +2,7 @@ from .algorithm import Algorithm
 
 
 class BranchAndBound(Algorithm):
-    def _solve(self, conf, i, weight, price):
+    def solve(self, conf, i, weight, price):
         if i == self.inst.size:
             if price >= self.sol.price:
                 self.sol.price = price
@@ -15,7 +15,7 @@ class BranchAndBound(Algorithm):
 
         conf[i] = 1
         if (new_weight <= self.inst.capacity) and (upper_bound > self.sol.price):
-            self._solve(conf, i + 1, new_weight, new_price)
+            self.solve(conf, i + 1, new_weight, new_price)
 
         conf[i] = 0
-        self._solve(conf, i + 1, weight, price)
+        self.solve(conf, i + 1, weight, price)

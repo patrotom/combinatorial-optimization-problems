@@ -1,88 +1,69 @@
-#!/usr/bin/env python3
+import subprocess
 
-import sys
-import argparse as ap
-from utils.input_processor import InputProcessor
-from utils.output_formatter import OutputFormatter, FPTASFormatter
 from lib.brute_force import BruteForce
 from lib.branch_and_bound import BranchAndBound
 from lib.greedy import Greedy, ReduxGreedy
-from lib.dynamic_prog import DynamicPrice, DynamicWeight, Fptas
-from lib.algorithm import ComputationError
+from lib.dynamic_prog import DynamicWeight
 from lib.solution import Solution, ErrorSolution
+from utils.input_processor import InputProcessor
 
 
-def parse_args():
-    parser = ap.ArgumentParser()
-    parser.add_argument("input_file", help="path to the input file")
-    parser.add_argument("solution_file", help="path to the solution file")
-    versions = ["bf", "bb", "dp", "dw", "gh", "rgh", "fptas"]
-    help = (
-        "version of the algorithm - "
-        "bf (Brute Force), "
-        "bb (Branch & Bound), "
-        "dp (Dynamic by Price), "
-        "dw (Dynamic by Weight), "
-        "gh (Greedy Heuristic), "
-        "rgh (Redux Greedy Heuristic), "
-        "fptas (FPTAS Algorithm)"
-    )
-    parser.add_argument(
-        "-v", "--version",
-        required=True,
-        choices=versions,
-        help=help
-    )
-    parser.add_argument("-e", "--epsilon", help="FPTAS precision", default=0.01)
+class KnapsackSolver:
+    def __init__(self, version, gen_opts):
+        self.version = version
+        self.gen_opts = gen_opts
+        self.sols = []
+        self.valid = True
 
-    return parser.parse_args()
+    def run(self):
+        solv_class = self.__solver_class()
+        solu_class = self.__solution_class()
+        self.__generate_instances()
 
+        for inst in self.instances:
+            solver = solv_class(inst, solu_class)
+            solver.run()
+            self.sols.append(solver.sol)
+    
+    def __solver_class(self):
+        switcher = {
+            "bf": BruteForce,
+            "bb": BranchAndBound,
+            "dw": DynamicWeight,
+            "gh": Greedy,
+            "rgh": ReduxGreedy,
+        }
+        return switcher.get(self.version, BruteForce)
 
-def solver_class(v):
-    switcher = {
-        "bf": BruteForce,
-        "bb": BranchAndBound,
-        "dp": DynamicPrice,
-        "dw": DynamicWeight,
-        "gh": Greedy,
-        "rgh": ReduxGreedy,
-        "fptas": Fptas,
-    }
-    return switcher.get(v, BruteForce)
+    def __solution_class(self):
+        if self.version in ["gh", "rgh"]:
+            return ErrorSolution
+        else:
+            return Solution
 
+    def __generate_instances(self):
+        if not type(self.gen_opts) is dict:
+            self.valid = False
+            self.instances = []
+            return
 
-def solution_class(v):
-    if v in ["gh", "rgh", "fptas"]:
-        return ErrorSolution
-    else:
-        return Solution
+        command = self.__generate_command()
+        result = subprocess.run(command, capture_output=True, text=True)
 
+        if result.returncode != 0:
+            self.valid = False
+            self.instances = []
+            return
 
-def knapsack_heuristic():
-    args = parse_args()
-    solv_class = solver_class(args.version)
-    solu_class = solution_class(args.version)
-
-    sols = []
-
-    with open(args.input_file, "r") as i_file, open(args.solution_file, "r") as s_file:
-        insts = InputProcessor(i_file, s_file).prepare_instances()
-
-    for inst in insts:
-        inst.eps = float(args.epsilon)
-        solver = solv_class(inst, solu_class)
-        solver.solve()
-        sols.append(solver.sol)
-
-    if args.version == "fptas":
-        FPTASFormatter(sols, args.input_file, args.version, args.epsilon).save_data()
-    else:
-        OutputFormatter(sols, args.input_file, args.version).save_data()
-
-
-if __name__ == "__main__":
-    try:
-        knapsack_heuristic()
-    except (FileNotFoundError, ComputationError) as e:
-        print(e)
-        exit(1)
+        self.instances = InputProcessor(result.stdout).prepare_instances()
+        
+    def __generate_command(self):
+        command = ['generator/kg2']
+        for opt, val in self.gen_opts.items():
+            if type(val) is float:
+                val = "{:.20f}".format(val)
+            else:
+                val = str(val)
+            command.extend([f"-{opt}", val])
+        
+        return command

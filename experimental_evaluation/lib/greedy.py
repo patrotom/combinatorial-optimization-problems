@@ -2,8 +2,9 @@ from .algorithm import Algorithm
 from .solution import ErrorSolution
 
 
+# TODO: Add checking of validity right here
 class Greedy(Algorithm):
-    def _solve(self, *_):
+    def solve(self, *_):
         self.inst.sort_items()
         capacity = self.inst.capacity
         price = 0
@@ -18,10 +19,10 @@ class Greedy(Algorithm):
 
 
 class ReduxGreedy(Algorithm):
-    def _solve(self, *_):
+    def solve(self, *_):
         greedy = Greedy(self.inst, ErrorSolution)
-        greedy._solve()
-        highest_price, index = self._find_highest_price()
+        greedy.solve()
+        highest_price, index = self.__find_highest_price()
 
         if greedy.sol.price > highest_price:
             self.sol.price = greedy.sol.price
@@ -30,7 +31,7 @@ class ReduxGreedy(Algorithm):
             self.sol.price = highest_price
             self.sol.conf[index] = 1
 
-    def _find_highest_price(self):
+    def __find_highest_price(self):
         highest_price = 0
         index = -1
         for item in self.inst.items:
