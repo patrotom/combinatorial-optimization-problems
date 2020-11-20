@@ -1,9 +1,19 @@
 from .algorithm import Algorithm
-from .solution import ErrorSolution
+from .branch_and_bound import BranchAndBound
+from .solution import Solution, ErrorSolution
 
 
-# TODO: Add checking of validity right here
-class Greedy(Algorithm):
+class Heuristic(Algorithm):
+    def _compute_rel_err(self):
+        bb = BranchAndBound(self.o_inst, Solution)
+        bb.run()
+
+        max_price = max(bb.sol.price, self.sol.price)
+
+        self.sol.rel_err = 0.0 if max_price == 0 else \
+            abs(self.sol.price - bb.sol.price) / max_price
+
+class Greedy(Heuristic):
     def solve(self, *_):
         self.inst.sort_items()
         capacity = self.inst.capacity
@@ -18,7 +28,7 @@ class Greedy(Algorithm):
         self.sol.price = price
 
 
-class ReduxGreedy(Algorithm):
+class ReduxGreedy(Heuristic):
     def solve(self, *_):
         greedy = Greedy(self.inst, ErrorSolution)
         greedy.solve()

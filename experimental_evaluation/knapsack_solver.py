@@ -43,6 +43,17 @@ class KnapsackSolver:
             t = list(map(lambda x: x.time, perm_sol))
             times.append(np.mean(t) * 1000)
         return times
+    
+    def rel_err_mean(self):
+        rel_errs = list(map(lambda x: x.rel_err, self.sols))
+        return np.mean(rel_errs) * 1000
+    
+    def perm_rel_err_means(self):
+        rel_errs = []
+        for perm_sol in self.perm_sols:
+            t = list(map(lambda x: x.rel_err, perm_sol))
+            rel_errs.append(np.mean(t) * 1000)
+        return rel_errs
 
     def __run(self):
         solv_class = self.__solver_class()
