@@ -1,14 +1,14 @@
+import sys
+import os
+module_path = os.path.abspath(os.path.join('..'))
+if module_path not in sys.path:
+    sys.path.append(module_path)
 import random
 import copy
 import numpy as np
 from timeit import default_timer as timer
 
 from genetic.lib.solution import Solution
-
-# p - pop size
-# g - number of generations
-# cp - crossover prob
-# m - mutation rate
 
 class Genetic():
     def __init__(self, inst, opts):
@@ -23,6 +23,9 @@ class Genetic():
         end = timer()
 
         self.sol.time = end - start
+        self.sol.price = self.sol.gen_data[-1][1]
+        self.sol.rel_err = abs(self.sol.price - self.inst.opt_price) / \
+                max(self.inst.opt_price, self.sol.price)
 
     def __run(self):
         self.__init_generation()
@@ -33,6 +36,7 @@ class Genetic():
             while len(gen) < len(self.prev_gen):
                 parents = self.__tournament()
                 offsprings = self.__crossover(parents)
+                offsprings = self.__mutate(offsprings)
                 gen += offsprings
 
             self.prev_gen = gen
@@ -77,7 +81,14 @@ class Genetic():
         return [i1, i2]
 
     def __mutate(self, offsprings):
-        pass
+        for offspring in offsprings:
+            if random.random() > self.opts["m"]:
+                continue
+            rand_idx = random.choice(list(range(self.inst.size)))
+            offspring.conf[rand_idx] = int(not offspring.conf[rand_idx])
+            offspring.fitness = self.__calc_fitness(offspring.conf)
+        
+        return offsprings
 
     def __find_fittest_two(self, sample):
         sample = sorted(sample, key=lambda x: x.fitness, reverse=True)
