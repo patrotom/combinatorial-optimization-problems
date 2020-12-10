@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 import os
 module_path = os.path.abspath(os.path.join('..'))
@@ -8,14 +10,16 @@ import copy
 import numpy as np
 from timeit import default_timer as timer
 
-from genetic.lib.solution import Solution
+from lib.solution import Solution
+from lib.instance import Instance
+from lib.item import Item
+
 
 class Genetic():
     def __init__(self, inst, opts):
         self.inst = inst
         self.opts = opts
         self.sol = Solution()
-        self.id = 0
 
     def run(self):
         start = timer()
@@ -23,7 +27,7 @@ class Genetic():
         end = timer()
 
         self.sol.time = end - start
-        self.sol.price = self.sol.gen_data[-1][1]
+        self.sol.price = self.sol.gen_data["max"][-1]
         self.sol.rel_err = abs(self.sol.price - self.inst.opt_price) / \
                 max(self.inst.opt_price, self.sol.price)
 
@@ -33,6 +37,7 @@ class Genetic():
         for _ in range(self.opts["g"]):
             gen = []
 
+            gen.append(self.__find_elite())
             while len(gen) < len(self.prev_gen):
                 parents = self.__tournament()
                 offsprings = self.__crossover(parents)
@@ -65,14 +70,14 @@ class Genetic():
         return parents
 
     def __crossover(self, parents):
-        if random.random() > self.opts["cp"]:
+        if random.random() > self.opts["c"]:
             return copy.deepcopy(parents)
         
         p1, p2 = sorted(random.sample(list(range(self.inst.size)), k=2))
         p_conf1, p_conf2 = parents[0].conf, parents[1].conf
 
-        o_conf1 = p_conf1[:p1] + p_conf2[p1:p2] + p_conf1[p2:]
-        o_conf2 = p_conf2[:p1] + p_conf1[p1:p2] + p_conf2[p2:]
+        o_conf1 = p_conf1[:p1] + p_conf2[p1:p2] + p_conf1[p1:]
+        o_conf2 = p_conf2[:p2] + p_conf1[p1:p2] + p_conf2[p2:]
         fitness1 = self.__calc_fitness(o_conf1)
         fitness2 = self.__calc_fitness(o_conf2)
         i1 = Individual(o_conf1, fitness1)
@@ -94,6 +99,9 @@ class Genetic():
         sample = sorted(sample, key=lambda x: x.fitness, reverse=True)
         return [sample[0], sample[1]]
 
+    def __find_elite(self):
+        return copy.deepcopy(max(self.prev_gen, key=lambda x: x.fitness))
+
     def __calc_fitness(self, conf):
         w_sum = self.inst.calc_weight(conf)
         if w_sum <= self.inst.capacity:
@@ -105,7 +113,8 @@ class Genetic():
         mean_f = np.mean(list(map(lambda x: x.fitness, self.prev_gen)))
         max_f = max(self.prev_gen, key=lambda x: x.fitness).fitness
 
-        self.sol.gen_data.append([mean_f, max_f])
+        self.sol.gen_data["mean"].append(mean_f)
+        self.sol.gen_data["max"].append(max_f)
 
 
 class Individual():

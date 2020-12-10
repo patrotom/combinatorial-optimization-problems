@@ -1,6 +1,5 @@
 class Instance:
-    def __init__(self, id, size, capacity, items, opt_price):
-        self.id = int(id)
+    def __init__(self, size, capacity, items, opt_price):
         self.size = int(size)
         self.capacity = int(capacity)
         self.items = items
