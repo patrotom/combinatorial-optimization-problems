@@ -19,18 +19,18 @@ class InputProcessor:
             s_lines = s_file.read().splitlines()
             for i_path in i_paths:
                 with open(i_path, "r") as i_file:
-                    insts.append(self.__parse_inst(i_file, s_lines))
+                    insts.append(self.__parse_inst(i_path, i_file, s_lines))
 
         return insts
 
-    def __parse_inst(self, i_file, s_lines):
+    def __parse_inst(self, i_path, i_file, s_lines):
         lines = i_file.read().splitlines()
         vars_num = lines[7].split()[2]
         weights = lines[9].split()[1:-1]
         clauses = []
         for line in lines[11:]:
             clause = line.lstrip().split()[:-1]
-            clauses.append(list(map(lambda x: int(x), clause)))
+            clauses.append(clause)
         
         inst_id = lines[8].split(" ")[-1].split("/")[1].rstrip(".cnf")
 
@@ -38,7 +38,7 @@ class InputProcessor:
             (x for x in s_lines if x.split(" ")[0] == inst_id)
         ).split(" ")[1]
 
-        return Instance(vars_num, weights, clauses, opt_sum)
+        return Instance(vars_num, weights, clauses, opt_sum, i_path)
 
 
 class OutputProcessor:

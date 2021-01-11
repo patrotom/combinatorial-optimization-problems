@@ -8,6 +8,7 @@ if module_path not in sys.path:
 import argparse as ap
 
 from sat.lib.data_processor import InputProcessor, OutputProcessor
+from sat.lib.genetic import Genetic
 
 
 def parse_args():
@@ -18,8 +19,15 @@ def parse_args():
 
 def run():
     id = parse_args().id
+    opts = {"p": 200, "g": 200, "c": 0.99, "m": 0.1}
     insts = InputProcessor(id).prepare_instances()
-    pass
+    sols = []
+
+    for inst in insts:
+        gen = Genetic(inst, opts)
+        gen.run()
+        sol = gen.sol
+        sols.append(gen.sol)
 
 
 if __name__ == "__main__":
