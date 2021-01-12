@@ -49,6 +49,16 @@ def tune_params2(set_id, insts, version):
             run(opts, insts, set_id, version)
 
 
+def compute1(set_id, insts, version):
+    opts = {"p": 500, "g": 200, "c": 0.999, "m": 0.1, "pan": False, "war": False}
+    run(opts, insts, set_id, version)
+
+
+def compute2(set_id, insts, version):
+    opts = {"p": 500, "g": 200, "c": 0.999, "m": 0.1, "pan": True, "war": False}
+    run(opts, insts, set_id, version)
+
+
 def run(opts, insts, set_id, version):
     sols = []
 
@@ -70,6 +80,10 @@ def main():
         tune_params1(set_id, insts, version)
     elif version == "t2":
         tune_params2(set_id, insts, version)
+    elif version == "c1":
+        compute1(set_id, insts, version)
+    elif version == "c2":
+        compute2(set_id, insts, version)
 
 
 if __name__ == "__main__":

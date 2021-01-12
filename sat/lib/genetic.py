@@ -18,7 +18,7 @@ class Genetic:
         end = timer()
 
         self.sol.time = end - start
-        best_indv = max(self.prev_gen, key=lambda x: x.fitness)
+        best_indv = self.__find_elite()
         self.sol.w_sum = best_indv.fitness
         self.sol.conf = best_indv.conf
         self.sol.rel_err = abs(self.sol.w_sum - self.inst.opt_sum) / \
@@ -30,7 +30,8 @@ class Genetic:
         for _ in range(self.opts["g"]):
             gen = []
 
-            gen.append(self.__find_elite())
+            self.elite = copy.deepcopy(self.__find_elite())
+            gen.append(self.elite)
             while len(gen) < len(self.prev_gen):
                 parents = self.__tournament()
                 offsprings = self.__crossover(parents)
@@ -38,6 +39,7 @@ class Genetic:
                 gen += offsprings
 
             self.prev_gen = gen
+            self.__pandemic()
 
     def __init_generation(self):
         self.prev_gen = []
@@ -47,6 +49,9 @@ class Genetic:
         for conf in confs:
             fitness = self.__calc_fitness(conf)
             self.prev_gen.append(Individual(conf, fitness))
+
+        self.max_fitness = self.__find_elite().fitness
+        self.stale_cnt = 0
 
     def __tournament(self):
         sample1 = random.sample(self.prev_gen, k=5)
@@ -90,7 +95,34 @@ class Genetic:
         return [sample[0], sample[1]]
 
     def __find_elite(self):
-        return copy.deepcopy(max(self.prev_gen, key=lambda x: x.fitness))
+        return max(self.prev_gen, key=lambda x: x.fitness)
+
+    def __pandemic(self):
+        if not self.opts["pan"]:
+            return
+
+        if self.stale_cnt < 50:
+            if self.elite.fitness == self.max_fitness:
+                self.stale_cnt += 1
+            else:
+                self.max_fitness = self.elite.fitness
+                self.stale_cnt = 0
+            return
+
+        to_wipe = int(self.opts["p"] / 2)
+        kept = sorted(
+            self.prev_gen, key=lambda x: x.fitness, reverse=True
+        )[:to_wipe]
+
+        pop_size = (self.opts["p"] - to_wipe, self.inst.vars_num)
+        confs = np.random.randint(2, size=pop_size).tolist()
+
+        for conf in confs:
+            fitness = self.__calc_fitness(conf)
+            kept.append(Individual(conf, fitness))
+
+        self.prev_gen = kept
+        self.stale_cnt = 0
 
     def __calc_fitness(self, conf):
         fitness = -self.inst.cls_num
