@@ -14,7 +14,7 @@ from sat.lib.genetic import Genetic
 def parse_args():
     parser = ap.ArgumentParser()
     parser.add_argument("set_id", help="id of the data set")
-    versions = ["t1", "t2", "c1", "c2"]
+    versions = ["t1", "t2", "c1", "c2", "c3"]
     parser.add_argument(
         "-v", "--version",
         required=True,
@@ -37,6 +37,18 @@ def tune_params1(set_id, insts, version):
             run(opts, insts, set_id, version)
 
 
+def tune_params2(set_id, insts, version):
+    opts = {"c": 0.999, "m": 0.10, "pan": False, "war": False}
+    ps = [200, 350, 500]
+    gs = [200, 350, 500]
+
+    for p in ps:
+        for g in gs:
+            opts["p"] = p
+            opts["g"] = g
+            run(opts, insts, set_id, version)
+
+
 def run(opts, insts, set_id, version):
     sols = []
 
@@ -56,6 +68,8 @@ def main():
 
     if version == "t1":
         tune_params1(set_id, insts, version)
+    elif version == "t2":
+        tune_params2(set_id, insts, version)
 
 
 if __name__ == "__main__":
