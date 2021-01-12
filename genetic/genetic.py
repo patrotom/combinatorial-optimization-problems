@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import sys
 import os
 module_path = os.path.abspath(os.path.join('..'))
