@@ -59,6 +59,11 @@ def compute2(set_id, insts, version):
     run(opts, insts, set_id, version)
 
 
+def compute3(set_id, insts, version):
+    opts = {"p": 500, "g": 200, "c": 0.999, "m": 0.1, "pan": False, "war": True}
+    run(opts, insts, set_id, version)
+
+
 def run(opts, insts, set_id, version):
     sols = []
 
@@ -84,6 +89,8 @@ def main():
         compute1(set_id, insts, version)
     elif version == "c2":
         compute2(set_id, insts, version)
+    elif version == "c3":
+        compute3(set_id, insts, version)
 
 
 if __name__ == "__main__":

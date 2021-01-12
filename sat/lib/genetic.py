@@ -27,7 +27,7 @@ class Genetic:
     def __run(self):
         self.__init_generation()
 
-        for _ in range(self.opts["g"]):
+        for it in range(self.opts["g"]):
             gen = []
 
             self.elite = copy.deepcopy(self.__find_elite())
@@ -40,6 +40,8 @@ class Genetic:
 
             self.prev_gen = gen
             self.__pandemic()
+            if it < int(self.opts["g"] / 2):
+                self.__war()
 
     def __init_generation(self):
         self.prev_gen = []
@@ -113,6 +115,32 @@ class Genetic:
         kept = sorted(
             self.prev_gen, key=lambda x: x.fitness, reverse=True
         )[:to_wipe]
+
+        pop_size = (self.opts["p"] - to_wipe, self.inst.vars_num)
+        confs = np.random.randint(2, size=pop_size).tolist()
+
+        for conf in confs:
+            fitness = self.__calc_fitness(conf)
+            kept.append(Individual(conf, fitness))
+
+        self.prev_gen = kept
+        self.stale_cnt = 0
+
+    def __war(self):
+        if not self.opts["war"]:
+            return
+
+        if self.stale_cnt < 50:
+            if self.elite.fitness == self.max_fitness:
+                self.stale_cnt += 1
+            else:
+                self.max_fitness = self.elite.fitness
+                self.stale_cnt = 0
+            return
+
+        to_wipe = int(self.opts["p"] / 2)
+
+        kept = random.sample(self.prev_gen, k=to_wipe)
 
         pop_size = (self.opts["p"] - to_wipe, self.inst.vars_num)
         confs = np.random.randint(2, size=pop_size).tolist()
